@@ -209,6 +209,8 @@ Colour grade is baked into the photo; the template accent still colours the bars
 
 Generation is cached in `<out>.images\` and recorded in `<out>.images.json` with start/end, text, prompt and file. Reuse the cache when re-rendering; `--refresh-images` regenerates.
 
+The driver selects the page's **smallest batch (3 images)** and returns on the **first usable one**, so a slot does not wait for the whole batch. If you see the gallery fill with unused variants, that is the abandoned remainder of the batch, not a bug.
+
 ## Quality gates — check every video
 
 1. **Speech metrics** in the log / `<out>.timing.json`:
