@@ -186,6 +186,25 @@ or `{"topic": "...", "prompts": [...]}`. You can also pass `--image-prompts path
 
 Sensible negatives: text/watermark/logo (Perchance sometimes draws caption text), `deformed hands`, `extra fingers`, `distorted face`, `low resolution`. Do not dump a long list — it starts steering the composition.
 
+### Shot, colour, effect
+
+The photo page's *Add shot… / Add color… / Add effect…* dropdowns just append a phrase to the prompt, so they are exposed as flags and applied to every slot:
+
+```powershell
+--image-shot close-up --image-color warm --image-effect bokeh
+--image-shot establishing --image-color cool --image-effect lens-flare
+```
+
+| Flag | Values |
+| --- | --- |
+| `--image-shot` | `extreme-close-up, low-angle, high-angle, aerial, close-up, portrait, macro, wide-angle, establishing, over-the-shoulder, telephoto, handheld, panoramic, dramatic` |
+| `--image-color` | `vibrant, warm, cool, pastel, bright, muted, neon, duotone, monochrome, sterile` |
+| `--image-effect` | `bokeh, tilt-shift, soft-focus, background-blur, chromatic-aberration, light-leaks, rear-projection, lens-flare, long-exposure, golden-hour, silhouette` |
+
+Pick **one of each**. Duplicates already in the prompt are skipped, so `--image-effect background-blur` is a no-op against the default style (which already says shallow depth of field). Recorded in `<out>.images.json`.
+
+Colour grade is baked into the photo; the template accent still colours the bars and hook, so keep them compatible (`warm` + gold `dark`, `cool` + rust `paper`).
+
 **Resolution is capped at 512×512 / 512×768 / 768×512 by the Perchance image plugin.** Labels like `Portrait (9:16)` or `Photorealistic (8K)` are cosmetic; measured output is always one of those three. `--image-shape Portrait` gives 512×768, which the renderer upscales and crops to 1080×1920. There is no setting that raises it, so do not promise a client native 1080p stills from Perchance; use `local` assets shot or exported at full size when that matters.
 
 Generation is cached in `<out>.images\` and recorded in `<out>.images.json` with start/end, text, prompt and file. Reuse the cache when re-rendering; `--refresh-images` regenerates.
