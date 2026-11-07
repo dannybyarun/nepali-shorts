@@ -203,6 +203,10 @@ The photo page's *Add shot… / Add color… / Add effect…* dropdowns just app
 
 Pick **one of each**. Duplicates already in the prompt are skipped, so `--image-effect background-blur` is a no-op against the default style (which already says shallow depth of field). Recorded in `<out>.images.json`.
 
+### Variety
+
+The planner keeps a per-video concept budget: concepts already used are pushed to the back, weak adjectives like "small" are dropped, and when a subject repeats it rotates camera coverage (`close-up shot` → `wide-angle shot` → `telephoto shot` → `low-angle shot`). A script that keeps talking about one thing then cuts like coverage rather than four copies of the same picture. Sidecar prompts bypass it; `--image-shot` overrides the automatic framing. Check `framing` in `<out>.images.json` if an image looks off.
+
 Colour grade is baked into the photo; the template accent still colours the bars and hook, so keep them compatible (`warm` + gold `dark`, `cool` + rust `paper`).
 
 **Resolution is capped at 512×512 / 512×768 / 768×512 by the Perchance image plugin.** Labels like `Portrait (9:16)` or `Photorealistic (8K)` are cosmetic; measured output is always one of those three. `--image-shape Portrait` gives 512×768, which the renderer upscales and crops to 1080×1920. There is no setting that raises it, so do not promise a client native 1080p stills from Perchance; use `local` assets shot or exported at full size when that matters.
