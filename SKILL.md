@@ -170,6 +170,24 @@ or `{"topic": "...", "prompts": [...]}`. You can also pass `--image-prompts path
 
 `--image-style` takes Perchance labels (`Casual Photo`, `Cinematic`, `Professional Photo`, ...). `--image-shape Portrait` is correct for 9:16.
 
+### Which Perchance generator
+
+| Flag | Page | Use it for |
+| --- | --- | --- |
+| `--image-generator photo` (default) | `ai-photo-generator` | realistic people, faces, hands, product and street scenes |
+| `--image-generator classic` | `ai-text-to-image-generator` | the original page; softer, more illustration-like |
+
+`photo` won a side-by-side on the same prompt for faces and hands, and it exposes a negative-prompt field:
+
+```powershell
+--image-generator photo `
+--image-negative "text, watermark, logo, signature, blurry, deformed hands, extra fingers"
+```
+
+Sensible negatives: text/watermark/logo (Perchance sometimes draws caption text), `deformed hands`, `extra fingers`, `distorted face`, `low resolution`. Do not dump a long list — it starts steering the composition.
+
+**Resolution is capped at 512×512 / 512×768 / 768×512 by the Perchance image plugin.** Labels like `Portrait (9:16)` or `Photorealistic (8K)` are cosmetic; measured output is always one of those three. `--image-shape Portrait` gives 512×768, which the renderer upscales and crops to 1080×1920. There is no setting that raises it, so do not promise a client native 1080p stills from Perchance; use `local` assets shot or exported at full size when that matters.
+
 Generation is cached in `<out>.images\` and recorded in `<out>.images.json` with start/end, text, prompt and file. Reuse the cache when re-rendering; `--refresh-images` regenerates.
 
 ## Quality gates — check every video
@@ -199,6 +217,8 @@ Perchance is a browser UI, not an API. Failure modes and the fix:
 | Text generator produces nothing | the page ignores programmatic value sets | use `src/textgen.py` as-is: `pressSequentially` + `bringToFront`. Do not swap in `fill()` |
 | Image slot becomes a card | that slot failed | acceptable; check `<out>.images.json`, re-run with `--refresh-images` |
 | Slow, ~20 s/image | queued free tier | expected; budget ~3 min for a 5-line short |
+| Image has stray text or a watermark | the model drew it | add it to `--image-negative` (`text, watermark, logo, signature`) and `--refresh-images` |
+| Want a different Perchance page | only two are wired | `--image-generator photo|classic`; other pages use a different DOM contract and need a new driver |
 | Blocked origin | session allowlist | `browse session allow perchance.org "*.perchance.org" image-generation.perchance.org` |
 
 Never put credentials in a script. Secrets are only typed through the relay's secret facility, and only after the session allowlist is set.
